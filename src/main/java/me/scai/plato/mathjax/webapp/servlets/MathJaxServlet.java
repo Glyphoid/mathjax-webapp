@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -127,14 +128,8 @@ public class MathJaxServlet extends HttpServlet {
         tex2pngPath = props.getProperty("tex2pngPath");
         tex2mmlPath = props.getProperty("tex2mmlPath");
 
-        if (tex2pngPath == null || tex2pngPath.isEmpty()) {
-            throw new IllegalStateException("Cannot find the path to tex2png");
-        }
-
-        if (tex2mmlPath == null || tex2mmlPath.isEmpty()) {
-            throw new IllegalStateException("Cannot find the path to tex2mml");
-        }
-
+        verifyExecutablePath(tex2pngPath);
+        verifyExecutablePath(tex2mmlPath);
 
 //        logger.info("tex2svgPath = \"" + tex2svgPath + "\"");
         logger.info("tex2pngPath = \"" + tex2pngPath + "\"");
@@ -263,6 +258,17 @@ public class MathJaxServlet extends HttpServlet {
         }
     }
 
+    private void verifyExecutablePath(String executablePath) {
+        if (executablePath == null || executablePath.isEmpty()) {
+            throw new RuntimeException("Invalid the executable path: " + executablePath);
+        }
+
+        File f = new File(executablePath);
+
+        if ( !f.exists() || f.isDirectory() ) {
+            throw new RuntimeException("Executable does not exist at path: " + executablePath);
+        }
+    }
 
 
 }
