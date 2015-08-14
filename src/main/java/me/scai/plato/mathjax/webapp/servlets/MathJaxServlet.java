@@ -29,14 +29,14 @@ public class MathJaxServlet extends HttpServlet {
 
     private static final Logger logger = Logger.getLogger(MathJaxServlet.class.getName());
 
-    private static final String MATH_TEX_FIELD = "mathTex";
+    static final String MATH_TEX_FIELD = "mathTex";
     private static final String IMAGE_FORMAT_FIELD = "imageFormat";
 
     public static final String IMAGE_WIDTH_FIELD = MathJaxConversionFactory.getImageWidthField();
     public static final String IMAGE_DPI_FIELD = MathJaxConversionFactory.getImageDpiField();
 
-    private static final String IMAGE_DATA_FIELD = "imageData";
-    private static final String RESP_ERRORS_FIELD = "errors";
+    static final String CONVERSION_RESULT_FIELD = "conversionResult";
+    static final String RESP_ERRORS_FIELD = "errors";
 
 //    private static final String FORMAT_IMAGE_SVG = "svg";
     private static final String FORMAT_IMAGE_PNG     = MathJaxConversionFactory.getFormatImagePng();
@@ -153,7 +153,8 @@ public class MathJaxServlet extends HttpServlet {
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) {
+    public void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException {
         /* Read the body of the request */
         StringBuilder sb = new StringBuilder();
         BufferedReader reader = null;
@@ -248,7 +249,7 @@ public class MathJaxServlet extends HttpServlet {
         }
 
         if (imageData != null) {
-            outObj.add(IMAGE_DATA_FIELD, new JsonPrimitive(imageData));
+            outObj.add(CONVERSION_RESULT_FIELD, new JsonPrimitive(imageData));
         }
 
         PrintWriter out = null;
