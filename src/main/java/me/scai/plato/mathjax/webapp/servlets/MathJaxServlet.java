@@ -29,9 +29,6 @@ public class MathJaxServlet extends HttpServlet {
 
     private static final Logger logger = Logger.getLogger(MathJaxServlet.class.getName());
 
-    private static final int DEFAULT_IMAGE_WIDTH = 300;
-    private static final int DEFAULT_IMAGE_DPI = 200;
-
     private static final String MATH_TEX_FIELD = "mathTex";
     private static final String IMAGE_FORMAT_FIELD = "imageFormat";
 
@@ -42,7 +39,6 @@ public class MathJaxServlet extends HttpServlet {
     private static final String RESP_ERRORS_FIELD = "errors";
 
 //    private static final String FORMAT_IMAGE_SVG = "svg";
-
     private static final String FORMAT_IMAGE_PNG     = MathJaxConversionFactory.getFormatImagePng();
     private static final String FORMAT_STRING_MATHML = MathJaxConversionFactory.getFormatStringMathML();
 
@@ -207,37 +203,15 @@ public class MathJaxServlet extends HttpServlet {
             if (reqObj.has(IMAGE_WIDTH_FIELD) && reqObj.get(IMAGE_WIDTH_FIELD).isJsonPrimitive()) {
                 auxData.add(IMAGE_WIDTH_FIELD, reqObj.get(IMAGE_WIDTH_FIELD));
             }
-//            if (imageWidth <= 0) {
-//                throw new InvalidImageDimensionsException("Invalid image width: " + imageWidth);
-//            }
 
             if (reqObj.has(IMAGE_DPI_FIELD) && reqObj.get(IMAGE_DPI_FIELD).isJsonPrimitive()) {
                 auxData.add(IMAGE_DPI_FIELD, reqObj.get(IMAGE_DPI_FIELD));
             }
-//            if (imageDpi < 0) {
-//                throw new InvalidImageDimensionsException("Invalid image dpi: " + imageWidth);
-//            }
+
 
             MathJaxConversion conversion = conversionFactory.getConversion(imageFormatToGenerate, auxData);
 
             imageData = conversion.convert(mathTex);
-
-//            try {
-//                imageData = mathTex2ImageData(mathTex, imageFormatToGenerate, imageWidth, imageDpi);
-//            } catch (IOException exc) {
-//                throw new MathJaxExecutionException(exc.getMessage());
-//            } catch (RuntimeException exc) {
-//                throw new MathJaxExecutionException(exc.getMessage());
-//            }
-
-//            if (imageFormatToGenerate.equals(FORMAT_IMAGE_PNG)) { //DEBUG: Test write to png file
-//                byte[] pngData = Base64.decodeBase64(imageData);
-//                try {
-//                    FileOutputStream fos = new FileOutputStream(new File("/tmp/test1.png"));
-//                    IOUtils.write(pngData, fos);
-//                } catch (IOException exc) {}
-//
-//            }
 
         } catch (RequestNotAJsonObjectException requestNotAJsonObjectException) {
             String errMsg = "Request body is not a JSON object";
@@ -250,13 +224,7 @@ public class MathJaxServlet extends HttpServlet {
             logger.severe(errMsg + ": " + missingMathTexExc.getMessage());
 
             errors.add(new JsonPrimitive(errMsg));
-//        } catch (MathJaxExecutionException mathJaxExecutionException) {
-//            errors.add(new JsonPrimitive("Error occurred during the execution of server commands: " +
-//                                         mathJaxExecutionException.getMessage()));
-//        } catch (UnsupportedImageFormatException UnsupportedImageFormatException) {
-//            errors.add(new JsonPrimitive("Unsupported image format: \"" + imageFormatToGenerate + "\""));
-//        } catch (InvalidImageDimensionsException invalidImageDimensionsException) {
-//            errors.add(new JsonPrimitive("Invalid image dimensions: \"" + invalidImageDimensionsException.getMessage() + "\""));
+
         } catch (IOException ioExc) {
             String errMsg = "Conversion failed due to IOException";
             logger.severe(errMsg + ": " + ioExc.getMessage());
@@ -273,7 +241,6 @@ public class MathJaxServlet extends HttpServlet {
             outObj.add(MATH_TEX_FIELD, new JsonPrimitive(mathTex));
         }
 
-        logger.info("imageData = " + imageData); //DEBUG
         if (imageData != null) {
             outObj.add(IMAGE_DATA_FIELD, new JsonPrimitive(imageData));
         }
@@ -288,99 +255,6 @@ public class MathJaxServlet extends HttpServlet {
             out.close();
         }
     }
-
-//    private String mathTex2ImageData(final String mathTex, final String format, int imageWidth, int imageDpi)
-//            throws IOException, UnsupportedImageFormatException {
-//        final String widthOptionFlag = "--width";
-//        final String dpiOptionFlag   = "--dpi";
-////        File f = File.createTempFile("mathjax-", ".svg");
-//
-//        // TODO: Protect against injection attack
-//        String binPath = null;
-//        boolean isImage;
-//        if (format.equalsIgnoreCase(FORMAT_IMAGE_SVG)) {
-//            binPath = tex2svgPath;
-//            isImage = true;
-//        } else if (format.equalsIgnoreCase(FORMAT_IMAGE_PNG)) {
-//            binPath = tex2pngPath;
-//            isImage = true;
-//        } else if (format.equalsIgnoreCase(FORMAT_STRING_MATHML)) {
-//            binPath = tex2mmlPath;
-//            isImage = false;
-//        } else {
-//            throw new UnsupportedImageFormatException();
-//        }
-//
-//        final String[] cmd;
-//        if (isImage) {
-//            cmd = new String[] {
-//                    binPath,
-//                    widthOptionFlag,
-//                    Integer.toString(imageWidth),
-//                    dpiOptionFlag,
-//                    Integer.toString(imageDpi),
-//                    wrapMathTex(mathTex)
-//            };
-//        } else {
-//            cmd = new String[] {
-//                    binPath,
-//                    wrapMathTex(mathTex)
-//            };
-//        }
-//
-//        //logger.info("Executing process: \"" + cmd + "\"");
-//        Process proc = Runtime.getRuntime().exec(cmd);
-//
-//        /* Capture stderr */
-//        InputStream stderr = proc.getErrorStream();
-//        InputStreamReader isr = new InputStreamReader(stderr);
-//        BufferedReader br = new BufferedReader(isr);
-//
-//        StringBuilder err = new StringBuilder("");
-//        String errLine = null;
-//        while ( (errLine = br.readLine()) != null) {
-//            err.append(errLine + "\n");
-//        }
-//
-//        if (err.length() > 0) {
-//            logger.severe("stderr = \"" + err.toString() + "\"");
-//            throw new RuntimeException("Execution of mathjax failed due to: " + err.toString());
-//        }
-//
-//        /* Capture stdout */
-//        String output = null;
-//        InputStream stdoutStream = proc.getInputStream();
-//        if (format.equalsIgnoreCase(FORMAT_IMAGE_SVG)) {
-//            InputStreamReader isrStdout = new InputStreamReader(stdoutStream);
-//            BufferedReader brStdout = new BufferedReader(isrStdout);
-//
-//            StringBuilder out = new StringBuilder("");
-//            String line = null;
-//            while ((line = brStdout.readLine()) != null) {
-//                out.append(line + "\n");
-//            }
-//
-//            logger.info("stdout = \"" + out.toString() + "\"");
-//
-//            output = out.toString();
-//        } else if (format.equalsIgnoreCase(FORMAT_IMAGE_PNG)) {
-//            byte[] dataBytes = IOUtils.toByteArray(stdoutStream);
-//
-//            output = Base64.encodeBase64String(dataBytes);
-//        } else if (format.equalsIgnoreCase(FORMAT_STRING_MATHML)) {
-//            final String defaultMathMLEncoding = "utf-8";
-//
-//            output = IOUtils.toString(stdoutStream, defaultMathMLEncoding);
-//        }
-//
-//        return output;
-//    }
-//
-//    private String wrapMathTex(String mathTex) {
-//        String wrappedMathTex = "{" + mathTex + "}";
-//
-//        return wrappedMathTex;
-//    }
 
 
 
