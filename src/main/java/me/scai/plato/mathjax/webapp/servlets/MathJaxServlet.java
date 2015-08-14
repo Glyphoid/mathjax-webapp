@@ -230,6 +230,12 @@ public class MathJaxServlet extends HttpServlet {
             logger.severe(errMsg + ": " + ioExc.getMessage());
 
             errors.add(new JsonPrimitive(errMsg));
+        } catch (IllegalArgumentException iaExc) {
+            String errMsg = "Conversion failed due to IllegalArgumentException" + ": " + iaExc.getMessage();
+            logger.severe(errMsg);
+
+            errors.add(new JsonPrimitive(errMsg));
+
         }
 
         /* Prepare the response */

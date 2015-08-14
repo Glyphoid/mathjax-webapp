@@ -2,9 +2,6 @@ package me.scai.plato.mathjax.webapp.servlets.conversions;
 
 
 import com.google.gson.JsonObject;
-import me.scai.plato.mathjax.webapp.servlets.conversions.ConversionToImagePng;
-import me.scai.plato.mathjax.webapp.servlets.conversions.ConversionToStringMathML;
-import me.scai.plato.mathjax.webapp.servlets.conversions.MathJaxConversion;
 
 import java.util.HashMap;
 import java.util.Map;

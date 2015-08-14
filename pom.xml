@@ -45,6 +45,14 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-test</artifactId>
+          <version>4.1.6.RELEASE</version>
+          <scope>test</scope>
+      </dependency>
+
   </dependencies>
   <build>
     <finalName>mathjax-webapp</finalName>
